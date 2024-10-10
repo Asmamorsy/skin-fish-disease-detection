@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        #upload-form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Detection</h1>
+    <form id="upload-form" action="/detectApi" method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*">
+        <button type="submit">Detect</button>
+    </form>
+    <div id="result-container">
+        <!-- Image and detection labels will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('/detectApi', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResult(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function displayResult(data) {
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = '';
+
+            const img = document.createElement('img');
+            img.src = 'data:image/jpeg;base64,' + data.image;
+            resultContainer.appendChild(img);
+
+            const label = document.createElement('h1');
+            label.textContent = 'Detection: ' + data.Detection;
+            resultContainer.appendChild(label);
+
+            const label2 = document.createElement('h1');
+            label2.textContent = 'Probability: ' + data.Percentage;
+            resultContainer.appendChild(label2);
+        }
+    </script>
+</body>
+</html>
